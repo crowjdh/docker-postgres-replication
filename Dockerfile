@@ -12,5 +12,8 @@ COPY standby.signal /tmp/standby.signal
 
 RUN chmod +x /docker-entrypoint-initdb.d/setup-replication.sh /usr/local/bin/docker-entrypoint.sh
 
+COPY docker-healthcheck /usr/local/bin/
+HEALTHCHECK CMD ["docker-healthcheck"]
+
 ## debug
 # ENTRYPOINT ["tail", "-f", "/dev/null"]
