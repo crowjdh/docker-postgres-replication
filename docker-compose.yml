@@ -1,33 +1,29 @@
 version: "3.8"
 
 services:
-  pg-master:
+  postgres: &postgres
     build: .
     restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=test
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - PGDATA=/var/lib/postgresql/data/pgdata
-      #- REPLICATE_FROM=pg-slave #only after pg-slave get promoted
+    env_file: .env
     volumes:
       - /var/lib/postgresql/data
+    profiles: ["_ignored"]
+
+  postgres-master:
+    <<: *postgres
+    profiles: []
+    ports:
+      - "5432:5432"
+    # environment:
+    #   - REPLICATE_FROM=pg-slave #only after pg-slave get promoted
 
   # #Promote to master `select pg_promote(true,60);`
-  pg-slave:
-    build: .
-    restart: always
+  postgres-slave:
+    <<: *postgres
+    profiles: []
     ports:
       - "2432:5432"
     environment:
-      - POSTGRES_DB=test
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - PGDATA=/var/lib/postgresql/data/pgdata
-      - REPLICATE_FROM=pg-master
+      - REPLICATE_FROM=postgres-master
     depends_on:
-      - "pg-master"
-    volumes:
-      - /var/lib/postgresql/data
+      - "postgres-master"
