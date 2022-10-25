@@ -3,6 +3,7 @@ version: "3.7"
 services:
   postgres: &postgres
     build: .
+    image: arm32v7/postgres:14-replica
     restart: always
     env_file: .env
     volumes:
