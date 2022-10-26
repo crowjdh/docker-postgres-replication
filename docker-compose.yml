@@ -22,6 +22,12 @@ services:
   postgres-slave:
     <<: *postgres
     hostname: postgres-slave-{{.Task.Slot}}
+    # This will only work if it's replicated only once to the same host
+    # If you want to replicate more than 1, see:
+    #   - https://github.com/moby/moby/issues/26445#issuecomment-246074751
+    #   - https://stackoverflow.com/a/64298786
+    #   - https://docs.docker.com/engine/reference/commandline/service_create/#create-services-using-templates
+    #   - https://docs.docker.com/engine/reference/commandline/config_create/
     volumes:
       - postgres-slave:/var/lib/postgresql/data
     ports:
