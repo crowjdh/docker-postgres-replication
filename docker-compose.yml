@@ -1,27 +1,21 @@
 version: "3.7"
 
 services:
-  postgres: &postgres
+  postgres-master: &postgres
     build: .
     image: arm32v7/postgres:14-replica
+    hostname: postgres-master
     restart: always
     env_file: .env
     volumes:
       - /var/lib/postgresql/data
-    profiles: ["_ignored"]
-
-  postgres-master:
-    <<: *postgres
-    profiles: []
     ports:
       - "5432:5432"
-    # environment:
-    #   - REPLICATE_FROM=pg-slave #only after pg-slave get promoted
 
   # #Promote to master `select pg_promote(true,60);`
   postgres-slave:
     <<: *postgres
-    profiles: []
+    hostname: postgres-slave-{{.Task.Slot}}
     ports:
       - "2432:5432"
     environment:
