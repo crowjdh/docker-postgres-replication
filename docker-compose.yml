@@ -1,5 +1,11 @@
 version: "3.7"
 
+volumes:
+  postgres-master:
+    external: true
+  postgres-slave:
+    external: true
+
 services:
   postgres-master: &postgres
     build: .
@@ -8,7 +14,7 @@ services:
     restart: always
     env_file: .env
     volumes:
-      - /var/lib/postgresql/data
+      - postgres-master:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
@@ -16,6 +22,8 @@ services:
   postgres-slave:
     <<: *postgres
     hostname: postgres-slave-{{.Task.Slot}}
+    volumes:
+      - postgres-slave:/var/lib/postgresql/data
     ports:
       - "2432:5432"
     environment:
