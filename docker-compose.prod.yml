@@ -1,0 +1,10 @@
+version: "3.7"
+
+services:
+  postgres-master:
+    ports:
+      - "5432:5432"
+
+  postgres-slave:
+    ports:
+      - "2432:5432"

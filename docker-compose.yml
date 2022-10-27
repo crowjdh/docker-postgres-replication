@@ -15,8 +15,6 @@ services:
     env_file: .env
     volumes:
       - postgres-master:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
 
   # #Promote to master `select pg_promote(true,60);`
   postgres-slave:
@@ -30,8 +28,6 @@ services:
     #   - https://docs.docker.com/engine/reference/commandline/config_create/
     volumes:
       - postgres-slave:/var/lib/postgresql/data
-    ports:
-      - "2432:5432"
     environment:
       - REPLICATE_FROM=postgres-master
     depends_on:
