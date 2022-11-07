@@ -6,13 +6,19 @@ volumes:
   postgres-slave:
     external: true
 
+x-postgres: &postgres
+  build: .
+  image: arm32v7/postgres:14-replica
+  hostname: postgres-master
+  restart: always
+  env_file: .env
+  volumes:
+    - postgres-master:/var/lib/postgresql/data
+
 services:
-  postgres-master: &postgres
-    build: .
-    image: arm32v7/postgres:14-replica
+  postgres-master:
+    <<: *postgres
     hostname: postgres-master
-    restart: always
-    env_file: .env
     volumes:
       - postgres-master:/var/lib/postgresql/data
 
