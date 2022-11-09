@@ -1,0 +1,36 @@
+version: '3.7'
+
+volumes:
+  yourservice-postgres-master:
+    external: true
+  yourservice-postgres-slave:
+    external: true
+
+networks:
+  yourservice:
+    external: false
+
+x-postgres: &postgres
+  env_file: ${PWD}/postgres.env
+  networks:
+    - yourservice
+
+services:
+  postgres-master:
+    <<: *postgres
+    volumes:
+      - yourservice-postgres-master:/var/lib/postgresql/data
+    deploy:
+      placement:
+        constraints:
+          - "node.role==manager"
+
+  postgres-slave:
+    <<: *postgres
+    volumes:
+      - yourservice-postgres-slave:/var/lib/postgresql/data
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - "node.role==worker"
