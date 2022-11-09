@@ -1,10 +1,20 @@
 version: "3.7"
 
+volumes:
+  postgres-master:
+    external: true
+  postgres-slave:
+    external: true
+
 services:
   postgres-master:
+    volumes:
+      - postgres-master:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
-  postgres-slave:
+  po:tgres-slave:
+    volumes:
+      - postgres-slave:/var/lib/postgresql/data
     ports:
       - "2432:5432"

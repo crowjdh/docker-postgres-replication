@@ -1,26 +1,16 @@
 version: "3.7"
 
-volumes:
-  postgres-master:
-    external: true
-  postgres-slave:
-    external: true
-
 x-postgres: &postgres
   build: .
   image: arm32v7/postgres:14-replica
   hostname: postgres-master
   restart: always
-  env_file: .env
-  volumes:
-    - postgres-master:/var/lib/postgresql/data
+  env_file: ${PWD}/postgres.env
 
 services:
   postgres-master:
     <<: *postgres
     hostname: postgres-master
-    volumes:
-      - postgres-master:/var/lib/postgresql/data
 
   # #Promote to master `select pg_promote(true,60);`
   postgres-slave:
@@ -32,8 +22,6 @@ services:
     #   - https://stackoverflow.com/a/64298786
     #   - https://docs.docker.com/engine/reference/commandline/service_create/#create-services-using-templates
     #   - https://docs.docker.com/engine/reference/commandline/config_create/
-    volumes:
-      - postgres-slave:/var/lib/postgresql/data
     environment:
       - REPLICATE_FROM=postgres-master
     depends_on:
